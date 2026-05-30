@@ -1,0 +1,340 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap');
+
+:root {
+    --bg-color: #0A0F1D;
+    --panel-bg: rgba(15, 23, 42, 0.6);
+    --accent: #00f0ff;
+    --danger: #ff0055;
+    --text: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    word-wrap: break-word;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-image: radial-gradient(circle at 60% 40%, #1a233a 0%, #0A0F1D 100%);
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 24% 1fr 26%;
+    gap: 15px;
+    width: 100vw;
+    height: 100vh;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.panel {
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Ensures inner scroll works */
+}
+
+.input-panel, .output-panel {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+}
+
+/* Custom Scrollbar for panels */
+.input-panel::-webkit-scrollbar, .output-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.input-panel::-webkit-scrollbar-track, .output-panel::-webkit-scrollbar-track {
+    background: rgba(0, 240, 255, 0.05); 
+    border-radius: 10px;
+}
+.input-panel::-webkit-scrollbar-thumb, .output-panel::-webkit-scrollbar-thumb {
+    background: var(--accent); 
+    border-radius: 10px;
+}
+
+.glassmorphism {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent);
+    margin-bottom: 25px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+/* Inputs Group */
+.vital-group {
+    margin-bottom: 30px;
+}
+.vital-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: #fff;
+}
+.vital-group span {
+    font-weight: bold;
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+}
+input[type=range] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: grab;
+}
+
+.sensor-highlight {
+    background: rgba(0, 240, 255, 0.03);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed rgba(0, 240, 255, 0.2);
+}
+
+.arduino-control {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.btn-arduino {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #888;
+    color: #888;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s;
+}
+
+.btn-arduino.active {
+    border-color: #00ff88;
+    color: #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.arduino-status {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    color: #888;
+}
+
+.btn-glow {
+    margin-top: auto;
+    padding: 15px;
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.btn-glow:hover {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 25px var(--accent);
+}
+
+/* GUI Canvas Area */
+.center-panel {
+    align-items: center;
+}
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid rgba(0,240,255,0.2);
+}
+#skeletonImg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    opacity: 1;
+    filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.2));
+}
+#gnnCanvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    top: 0;
+    left: 0;
+}
+
+/* AI Outputs */
+.ai-card {
+    background: rgba(0,0,0,0.4);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border-left: 3px solid var(--accent);
+    transition: all 0.3s ease;
+}
+.ai-card:hover {
+    background: rgba(0, 240, 255, 0.03);
+}
+.ai-card h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    opacity: 0.9;
+}
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.5s ease;
+}
+.risk-text {
+    text-align: right;
+    font-size: 1.3rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.action-card {
+    border-left-color: #ffcc00;
+    margin-top: auto;
+}
+.rl-alert {
+    padding: 20px;
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid #ffcc00;
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    color: #ffcc00;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+    transition: all 0.5s ease;
+}
+
+.medication-card {
+    border-left-color: #00f0ff;
+}
+.med-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.med-item {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+.med-item strong {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-family: 'Orbitron', sans-serif;
+}
+.med-item span {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin-top: 4px;
+}
+.no-meds {
+    font-style: italic;
+    opacity: 0.6;
+    text-align: center;
+    font-size: 0.9rem;
+}
+.medical-disclaimer {
+    font-size: 0.75rem;
+    color: var(--danger);
+    background: rgba(255, 0, 85, 0.05);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 0, 85, 0.2);
+    text-align: center;
+    line-height: 1.2;
+}
+.medical-disclaimer i {
+    margin-right: 5px;
+}
+
+.gnn-labels-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+.gnn-tag {
+    position: absolute;
+    background: rgba(0, 240, 255, 0.1);
+    color: #00f0ff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.critical-tag {
+    background: rgba(255, 0, 85, 0.2) !important;
+    color: #ff0055 !important;
+    border-color: #ff0055 !important;
+    box-shadow: 0 0 10px #ff0055;
+}
+
+.critical-alert {
+    color: #ff0055 !important;
+    border-color: #ff0055 !important;
+    background: rgba(255, 0, 85, 0.1) !important;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.3) !important;
+}
+.stable-alert {
+    color: #00ff88 !important;
+    border-color: #00ff88 !important;
+    background: rgba(0, 255, 136, 0.1) !important;
+    box-shadow: none !important;
+}
+

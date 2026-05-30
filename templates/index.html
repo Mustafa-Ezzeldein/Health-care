@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Care- Online Center</title>
+    <!-- Favicon to highlight the vital heart shape instead of the default globe -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🫀</text></svg>">
+    <!-- Link to local CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Side Panel (Patient Inputs) -->
+        <div class="panel input-panel glassmorphism">
+            <h2><i class="fa-solid fa-user-doctor"></i> Patient Vitals</h2>
+            
+            <div class="vital-group">
+                <label>Age: <span id="ageVal">50</span></label>
+                <input type="range" id="age" min="20" max="90" value="50" step="1" oninput="updateVal('age', 'ageVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>Sex: <span id="sexVal" style="font-size:0.85em;">1 (Male)</span></label>
+                <input type="range" id="sex" min="0" max="1" value="1" step="1" oninput="updateVal('sex', 'sexVal')">
+            </div>
+            
+            <div class="vital-group">
+                <label>Chest Pain Type: <span id="cpVal" style="font-size:0.85em;">0 (Typical Angina)</span></label>
+                <input type="range" id="cp" min="0" max="3" value="0" step="1" oninput="updateVal('cp', 'cpVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>Blood Pressure: <span id="trestbpsVal">120</span></label>
+                <input type="range" id="trestbps" min="90" max="200" value="120" step="1" oninput="updateVal('trestbps', 'trestbpsVal')">
+            </div>
+            
+            <div class="vital-group">
+                <label>Cholesterol: <span id="cholVal">200</span></label>
+                <input type="range" id="chol" min="100" max="400" value="200" step="1" oninput="updateVal('chol', 'cholVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>Blood Sugar (>120mg/dl): <span id="fbsVal" style="font-size:0.85em;">0 (Normal)</span></label>
+                <input type="range" id="fbs" min="0" max="1" value="0" step="1" oninput="updateVal('fbs', 'fbsVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>Resting Heart Activity (ECG): <span id="restecgVal" style="font-size:0.85em;">0 (Normal)</span></label>
+                <input type="range" id="restecg" min="0" max="2" value="0" step="1" oninput="updateVal('restecg', 'restecgVal')">
+            </div>
+
+
+            <div class="vital-group">
+                <label>Pain During Exercise: <span id="exangVal" style="font-size:0.85em;">0 (No)</span></label>
+                <input type="range" id="exang" min="0" max="1" value="0" step="1" oninput="updateVal('exang', 'exangVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>ST Depression (Stress Test): <span id="oldpeakVal">0.0</span></label>
+                <input type="range" id="oldpeak" min="0" max="6" value="0.0" step="0.1" oninput="updateVal('oldpeak', 'oldpeakVal')">
+            </div>
+
+            <div class="vital-group">
+                <label>ST Segment Slope: <span id="slopeVal" style="font-size:0.85em;">1 (Flat)</span></label>
+                <input type="range" id="slope" min="0" max="2" value="1" step="1" oninput="updateVal('slope', 'slopeVal')">
+            </div>
+
+            <div class="vital-group sensor-highlight">
+                <label><i class="fa-solid fa-heart-pulse"></i> Heart Rate: <span id="thalachVal">150</span></label>
+                <input type="range" id="thalach" min="70" max="220" value="150" step="1" oninput="updateVal('thalach', 'thalachVal')">
+            </div>
+
+            <div class="vital-group sensor-highlight">
+                <label><i class="fa-solid fa-droplet"></i> Oxygen (SpO2): <span id="oxygenVal">98</span>%</label>
+                <input type="range" id="oxygen" min="80" max="100" value="98" step="1" oninput="updateVal('oxygen', 'oxygenVal')">
+            </div>
+
+            <div class="vital-group sensor-highlight">
+                <label><i class="fa-solid fa-temperature-half"></i> Temperature: <span id="tempVal">37.0</span>°C</label>
+                <input type="range" id="temp" min="35" max="42" value="37.0" step="0.1" oninput="updateVal('temp', 'tempVal')">
+            </div>
+
+            <div class="arduino-control">
+                <button onclick="toggleArduino()" id="arduinoBtn" class="btn-arduino">
+                    <i class="fa-solid fa-microchip"></i> Connect Arduino
+                </button>
+                <button onclick="stopArduino()" id="closeBtn" class="btn-arduino" style="background: rgba(255, 0, 85, 0.2); border-color: #ff0055; margin-top: 5px; display:none;">
+                    <i class="fa-solid fa-power-off"></i> Close connection
+                </button>
+                <div id="arduinoStatus" class="arduino-status">Status: Disconnected</div>
+            </div>
+
+            <button onclick="analyzePatient()" class="btn-glow" id="analyzeBtn">Run AI Analysis</button>
+        </div>
+
+        <!-- Main Screen (Patient skeleton and GNN visualization) -->
+        <div class="panel center-panel glassmorphism">
+            <h2><i class="fa-solid fa-network-wired"></i> GNN Biological Network</h2>
+            <div class="canvas-wrapper">
+                <!-- Skeleton image as background (as directly requested) -->
+                <img id="skeletonImg" src="{{ url_for('static', filename='images/heart_bg.png') }}" alt="Futuristic Heart">
+                <!-- JS Canvas for sensor relationships -->
+                <canvas id="gnnCanvas"></canvas>
+                
+            </div>
+        </div>
+
+        <!-- Right Panel (AI Results and Outputs) -->
+        <div class="panel output-panel glassmorphism">
+            <h2><i class="fa-solid fa-microchip"></i> AI Decisions</h2>
+            
+            <!-- RBF Neural Network Predictions -->
+            <div class="ai-card">
+                <h3>RBF Deep Prediction</h3>
+                <div class="progress-container"><div id="rbfBar" class="progress-fill"></div></div>
+                <h4 id="rbfText" class="risk-text">0.0%</h4>
+            </div>
+
+            <!-- SOM Classification (Moved up as requested) -->
+            <!-- Fuzzy Predictions (Now called Decision) -->
+            <div class="ai-card">
+                <h3>Fuzzy Logic Decision</h3>
+                <div class="progress-container"><div id="fuzzyBar" class="progress-fill"></div></div>
+                <h4 style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px; text-align: right;">Disease Risk Likelihood</h4>
+                <h4 id="fuzzyText" class="risk-text">0.0%</h4>
+            </div>
+
+            <!-- SOM Classification -->
+            <div class="ai-card" style="border-left-color: #bb00ff; padding-bottom: 10px;">
+                <h3>SOM Spatial Clustering</h3>
+                <h4 id="somText" class="risk-text" style="color: #bb00ff;">N/A</h4>
+            </div>
+
+            <!-- ART2 Classification -->
+            <div class="ai-card" style="border-left-color: #00ffaa; padding-bottom: 10px;">
+                <h3>ART2 Adaptive Pattern</h3>
+                <div class="vigilance-control" style="margin: 10px 0; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px;">
+                    <label style="font-size: 0.7em; color: #00ffaa; display: block; margin-bottom: 3px;">Vigilance: <span id="vigVal">0.82</span></label>
+                    <input type="range" id="vigSlider" min="0.5" max="0.99" step="0.01" value="0.82" oninput="document.getElementById('vigVal').innerText = this.value; analyzePatient();" style="width: 100%; accent-color: #00ffaa; cursor: pointer; height: 4px;">
+                </div>
+                <h4 id="artText" class="risk-text" style="color: #00ffaa;">N/A</h4>
+            </div>
+
+            <!-- AI Medication Suggestions -->
+            <div class="ai-card medication-card">
+                <h3><i class="fa-solid fa-pills"></i> Suggested Medications</h3>
+                <div id="medList" class="med-list">
+                    <div class="no-meds">No medications suggested yet.</div>
+                </div>
+                <div class="medical-disclaimer">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 
+                    Disclaimer: Consult a doctor before taking any meds.
+                </div>
+            </div>
+
+            <!-- RL Intensive Care Decision -->
+            <div class="ai-card action-card">
+                <h3>RL Recommended Action</h3>
+                <div class="rl-alert" id="rlAlert">Awaiting Data...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Link local JS file -->
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=1.1"></script>
+</body>
+</html>
